@@ -11,6 +11,13 @@ resource "libvirt_volume" "server-web-disk" {
   format           = "qcow2"
 }
 
+# ISO cloud-init con la configuración inicial de la máquina
+resource "libvirt_cloudinit_disk" "server-web-cloudinit" {
+  name           = "server-web-cloudinit.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-web.yaml")
+  network_config = file("${path.module}/cloud-init/network-web-config.yaml")
+}
 
 
 #################################
@@ -26,3 +33,10 @@ resource "libvirt_volume" "server-db-disk" {
   format           = "qcow2"
 }
 
+# ISO cloud-init con la configuración inicial de la máquina
+resource "libvirt_cloudinit_disk" "server-db-cloudinit" {
+  name           = "server-db-cloudinit.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-db.yaml")
+  network_config = file("${path.module}/cloud-init/network-db-config.yaml")
+}
