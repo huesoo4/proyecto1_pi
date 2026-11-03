@@ -10,13 +10,13 @@
 
 # La base de datos va antes que la web: la aplicación la necesita
 - name: Servidor de base de datos
-  hosts: servidores_bd
+  hosts: server-db
   become: true
   roles:
     - bd
 
 - name: Servidor web
-  hosts: servidores_web
+  hosts: server-web
   become: true
   roles:
     - web
