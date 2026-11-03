@@ -22,8 +22,8 @@ resource "libvirt_cloudinit_disk" "server-web-cloudinit" {
 # Definición del dominio (máquina virtual)
 resource "libvirt_domain" "server-web" {
   name   = "server-web"
-  memory = 1024
-  vcpu   = 2
+  memory = var.memoria
+  vcpu   = var.vcpus
 
   # Red 1: NAT con DHCP (acceso exterior)
   network_interface {
@@ -74,8 +74,8 @@ resource "libvirt_cloudinit_disk" "server-db-cloudinit" {
 # Definición del dominio (máquina virtual)
 resource "libvirt_domain" "server-db" {
   name   = "server-db"
-  memory = 1024
-  vcpu   = 2
+  memory = var.memoria
+  vcpu   = var.vcpus
 
   # Red 1: NAT con DHCP (acceso exterior)
   network_interface {
