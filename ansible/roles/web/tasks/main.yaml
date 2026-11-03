@@ -1,0 +1,52 @@
+- name: Instalar Apache con PHP
+  ansible.builtin.apt:
+    name:
+      - apache2
+      - libapache2-mod-php
+      - php-mysql
+      - php-mbstring
+    state: present
+
+- name: Activar el módulo rewrite # (lo usa el .htaccess de la aplicación)
+  community.general.apache2_module:
+    name: rewrite
+    state: present
+  notify: Reiniciar apache2
+
+# update: false -> si ya está clonada no se toca, así config.php (generado
+# con la plantilla) no da conflicto y la segunda ejecución no cambia nada
+- name: Desplegar la aplicación
+  ansible.builtin.git:
+    repo: "{{ app_repo }}"
+    dest: "{{ document_root }}"
+    version: "{{ app_version }}"
+    update: false
+
+- name: Configurar la conexión a la base de datos
+  ansible.builtin.template:
+    src: config.php.j2
+    dest: "{{ document_root }}/config.php"
+    owner: root
+    group: www-data
+    mode: "0640"
+
+- name: Crear el virtual host
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: "/etc/apache2/sites-available/{{ dominio }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Recargar apache2
+
+- name: Activar el virtual host
+  ansible.builtin.command: "a2ensite {{ dominio }}"
+  args:
+    creates: "/etc/apache2/sites-enabled/{{ dominio }}.conf"
+  notify: Recargar apache2
+
+- name: Desactivar el sitio por defecto
+  ansible.builtin.command: a2dissite 000-default
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify: Recargar apache2
