@@ -1,0 +1,22 @@
+# Configuración del escenario, se ejecuta con "ansible-playbook site.yaml"
+
+- name: Configuración común
+  hosts: all
+  become: true
+  # Los facts se recogen dentro del rol commons, cuando la máquina ya responde
+  gather_facts: false
+  roles:
+    - commons
+
+# La base de datos va antes que la web: la aplicación la necesita
+- name: Servidor de base de datos
+  hosts: servidores_bd
+  become: true
+  roles:
+    - bd
+
+- name: Servidor web
+  hosts: servidores_web
+  become: true
+  roles:
+    - web
