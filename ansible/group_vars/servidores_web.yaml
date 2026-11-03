@@ -1,0 +1,3 @@
+# Virtual host de la aplicación
+dominio: www.lopezhueso.org
+document_root: /var/www/guestbook
