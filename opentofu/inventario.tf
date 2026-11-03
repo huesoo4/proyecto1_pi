@@ -4,7 +4,8 @@ resource "local_file" "inventario" {
   filename        = "${path.module}/../ansible/hosts"
   file_permission = "0644"
   content = templatefile("${path.module}/inventario.tftpl", {
+    # Red de gestión (por donde entra Ansible)
     ip_server_web = try(libvirt_domain.server-web.network_interface[0].addresses[0], "")
-    ip_server_db = try(libvirt_domain.server-db.network_interface[0].addresses[0], ""),
+    ip_server_db  = try(libvirt_domain.server-db.network_interface[0].addresses[0], "")
   })
 }
