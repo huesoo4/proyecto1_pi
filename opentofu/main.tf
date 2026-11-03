@@ -27,13 +27,13 @@ resource "libvirt_domain" "server-web" {
 
   # Red 1: NAT con DHCP (acceso exterior)
   network_interface {
-    network_id     = libvirt_network.p1-nat.id
+    network_id     = libvirt_network.red_nat.id
     wait_for_lease = true
   }
 
   # Red 2: aislada sin DHCP (IP estática 10.0.50.1/24)
   network_interface {
-    network_id = libvirt_network.p1-datos.id
+    network_id = libvirt_network.red_datos.id
   }
 
   disk { volume_id = libvirt_volume.server-web-disk.id }
@@ -79,13 +79,13 @@ resource "libvirt_domain" "server-db" {
 
   # Red 1: NAT con DHCP (acceso exterior)
   network_interface {
-    network_id     = libvirt_network.p1-nat.id
+    network_id     = libvirt_network.red_nat.id
     wait_for_lease = true
   }
 
   # Red 2: aislada sin DHCP (IP estática 10.0.50.2/24)
   network_interface {
-    network_id = libvirt_network.p1-datos.id
+    network_id = libvirt_network.red_datos.id
   }
 
   disk { volume_id = libvirt_volume.server-db-disk.id }
