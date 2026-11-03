@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+<VirtualHost *:80>
+    ServerName {{ dominio }}
+    DocumentRoot {{ document_root }}
+
+    <Directory {{ document_root }}>
+        Options -Indexes +FollowSymLinks
+        # La aplicación usa .htaccess para las reglas de reescritura
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # El repositorio git no se sirve
+    <DirectoryMatch "^{{ document_root }}/\.git">
+        Require all denied
+    </DirectoryMatch>
+
+    ErrorLog ${APACHE_LOG_DIR}/{{ dominio }}_error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ dominio }}_access.log combined
+</VirtualHost>
