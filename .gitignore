@@ -1,0 +1,7 @@
+opentofu/terraform.tfstate
+opentofu/.terraform
+opentofu/terraform.tfstate.backup
+opentofu/.terraform.lock.hcl
+opentofu/main.tf.bak
+opentofu/cloud-init/network-config.yaml.tftpl.bak
+opentofu/cloud-init/user-data.yaml.tftpl.bak
