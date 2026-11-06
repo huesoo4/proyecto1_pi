@@ -9,9 +9,15 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.5"
     }
+    incus = {
+      source  = "lxc/incus"
+      version = "~> 1.1.1"
+    }
   }
 }
 
 provider "libvirt" {
   uri = "qemu:///system"
 }
+
+provider "incus" {}
