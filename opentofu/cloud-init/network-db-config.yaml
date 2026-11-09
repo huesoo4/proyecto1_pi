@@ -5,4 +5,4 @@ network:
       dhcp4: true              # red NAT con DHCP
     ens4:
       dhcp4: false
-      addresses: ["10.0.50.2/24"]  # IP estática en red muy aislada (actúa como gateway)
+      addresses: ["10.0.50.2/24"]  # IP estática en la red muy aislada
