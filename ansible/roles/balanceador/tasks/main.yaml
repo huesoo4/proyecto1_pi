@@ -1,0 +1,21 @@
+- name: Instalar HAProxy
+  ansible.builtin.apt:
+    name: haproxy
+    state: present
+
+# validate: si la configuración tiene errores no se sustituye la que funciona
+- name: Configurar el balanceo entre los servidores web
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    validate: haproxy -c -f %s
+  notify: Recargar haproxy
+
+- name: Asegurar que HAProxy está en marcha
+  ansible.builtin.service:
+    name: haproxy
+    state: started
+    enabled: true
