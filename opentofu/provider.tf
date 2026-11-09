@@ -13,6 +13,9 @@ terraform {
       source  = "lxc/incus"
       version = "~> 1.1.1"
     }
+    external = { 
+      source = "hashicorp/external" 
+    }
   }
 }
 
