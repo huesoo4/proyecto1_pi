@@ -26,11 +26,31 @@ variable "memoria" {
   default = 1024
 }
 
-# vCPUs para servidores
-# Memoria para servidores
+# vCPUs para servidores y límite de CPU del contenedor balanceador
 variable "vcpus" {
   description = "Número de vCPUs para cada servidor"
   type = number
   default = 2
 }
 
+# Imagen del contenedor LXC (balanceador)
+variable "incus-cloud" {
+  type = string
+  description = "Nombre de la imagen para contenedor LXC Debian con cloud-init"
+  default = "images:debian/13/cloud"
+}
+
+# Memoria para contenedores en el formato de Incus tiene que especificarse con unidad
+variable "cmemoria" {
+  description = "Límite de memoria RAM del contenedor (p. ej. 1024MiB)"
+  type = string
+  default = "1024MiB"
+}
+
+# Nombre de la aplicación. Solo se usa en el output "etc_hosts", tiene que
+# coincidir con "dominio" de ansible/group_vars/servidores_web.yaml
+variable "dominio" {
+  type        = string
+  description = "Nombre DNS de la aplicación"
+  default     = "www.hueso.org"
+}
