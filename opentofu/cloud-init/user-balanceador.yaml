@@ -1,0 +1,25 @@
+#cloud-config
+hostname: balanceador
+
+timezone: Europe/Madrid
+users:
+  - name: debian
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9UFfPmjYN7oB0wmpH/IptqUBprkOMO7qTAdEWKzRcNzFl1QfXV/E6X4/dHxDatuScx4twP7C6mEcRpYB5g++GIOlzHHbbCSO4xsRfNx9BBmUDlfyEabNXiteuGveKGXa7Gu/eO7bH9RQVQM3vLUqkc25KqgZWIe7GHsyOvKhDaXdiPq3lzi7Cx2q/cBy665dH+sUOU72e8jKBRfwhdzDaj0QSpWs3gnLoq0ciwzsSje6M5fdBlUPYVQtbCrGJ+Y5mkSdMxcEG7ZHlqK9mBOtY4UoTGp1CFcAmBODwi9IH+U62Yi5f6wAdjgBHwnGH6DI0BJJXompYfBhDCRIiwPB16A/rSixomRlT+mbJ4BEdKPavDPGWvhCJg57nfD0bMXLpshIQefvJVXxRwxPyAkYHewBpPxXLAv/dDkhbRvJHMRQ3LaGUR6rVgBGQEUPMl0AbbG1m2BZdAjqQzG21AjUJZw56jPavs5zBistMMn7slVK64nkMi2tRPZdR4/XTrbs= hueso@ASIR
+
+chpasswd:
+  expire: False
+  users:
+    - name: debian
+      password: asdasd
+      type: text
+
+package_update: true  # refresca índices de apt
+package_upgrade: true # aplica actualizaciones disponibles en el primer arranque
+packages:
+  - openssh-server
+runcmd:
+  - systemctl enable --now ssh
