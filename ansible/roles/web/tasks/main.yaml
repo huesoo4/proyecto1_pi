@@ -1,3 +1,5 @@
+# git para desplegar la aplicación y el cliente de MariaDB para comprobar
+# la conexión con la base de datos
 - name: Instalar Apache con PHP
   ansible.builtin.apt:
     name:
@@ -5,11 +7,19 @@
       - libapache2-mod-php
       - php-mysql
       - php-mbstring
+      - git
+      - mariadb-client
     state: present
 
 - name: Activar el módulo rewrite # (lo usa el .htaccess de la aplicación)
   community.general.apache2_module:
     name: rewrite
+    state: present
+  notify: Reiniciar apache2
+
+- name: Activar el módulo headers # (cabecera X-Servidor del virtual host)
+  community.general.apache2_module:
+    name: headers
     state: present
   notify: Reiniciar apache2
 
