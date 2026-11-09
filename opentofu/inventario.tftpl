@@ -1,9 +1,13 @@
 # Fichero generado por OpenTofu (opentofu/inventario.tf): no lo edites a mano
 [servidores_web]
-server-web ansible_host=${ip_server_web} ansible_user=debian ip_datos=10.0.50.1
+server-web1 ansible_host=${ip_server_web1} ansible_user=debian ip_datos=10.0.50.3
+server-web2 ansible_host=${ip_server_web2} ansible_user=debian ip_datos=10.0.50.4
 
 [servidores_bd]
 server-db ansible_host=${ip_server_db} ansible_user=ubuntu ip_datos=10.0.50.2
+
+[balanceadores]
+balanceador ansible_host=${ip_balanceador} ansible_user=debian ip_datos=10.0.50.1
 
 [servidores:children]
 servidores_web
