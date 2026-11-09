@@ -6,15 +6,15 @@ bd_password: guestb00k
 # IP de cada servidor en la red de datos. No se escriben aquí: salen de la
 # variable "ip_datos" que OpenTofu pone en el inventario
 ip_datos_bd: "{{ hostvars[groups['servidores_bd'][0]]['ip_datos'] }}"
-ip_datos_web: "{{ hostvars[groups['servidores_web'][0]]['ip_datos'] }}"
+# Hay varios servidores web: lista con la IP de datos de cada uno
+ips_datos_web: "{{ groups['servidores_web'] | map('extract', hostvars, 'ip_datos') | list }}"
 
 # Aplicación guestbook_php (fijada a un commit para que el despliegue no cambie)
 app_repo: https://github.com/josedom24/guestbook_php.git
 app_version: a5b6c516e2aab8449e1e838284b2eff97813251d
 
-# Paquetes comunes a todas las máquinas
+# Paquetes de administración comunes a todas las máquinas (rol commons). Los
+# paquetes que necesita cada servicio los instala su propio rol
 paquetes_comunes:
   - vim
   - curl
-  - git
-  - mariadb-client

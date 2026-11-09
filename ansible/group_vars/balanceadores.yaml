@@ -1,0 +1,4 @@
+# Página de estadísticas de HAProxy
+haproxy_stats_puerto: 8404
+haproxy_stats_usuario: admin
+haproxy_stats_password: asdasd
