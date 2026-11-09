@@ -30,15 +30,18 @@
     state: present
     login_unix_socket: "{{ mariadb_socket }}"
 
-- name: Crear el usuario, que solo puede conectarse desde el servidor web
+# Un usuario 'guestbook'@'IP' por cada servidor web: solo pueden conectarse
+# ellos, y solo por la red de datos
+- name: Crear el usuario, que solo puede conectarse desde los servidores web
   community.mysql.mysql_user:
     name: "{{ bd_usuario }}"
-    host: "{{ ip_datos_web }}"
+    host: "{{ item }}"
     password: "{{ bd_password }}"
     priv: "{{ bd_nombre }}.*:ALL"
     column_case_sensitive: true
     state: present
     login_unix_socket: "{{ mariadb_socket }}"
+  loop: "{{ ips_datos_web }}"
 
 - name: Crear el directorio para el script de la base de datos
   ansible.builtin.file:
