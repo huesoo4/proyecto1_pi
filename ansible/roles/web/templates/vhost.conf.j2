@@ -3,6 +3,10 @@
     ServerName {{ dominio }}
     DocumentRoot {{ document_root }}
 
+    # Indica qué servidor web ha atendido la petición: permite ver el reparto
+    # que hace el balanceador
+    Header always set X-Servidor "{{ inventory_hostname }}"
+
     <Directory {{ document_root }}>
         Options -Indexes +FollowSymLinks
         # La aplicación usa .htaccess para las reglas de reescritura
