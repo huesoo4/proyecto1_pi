@@ -1,5 +1,7 @@
 # Configuración del escenario, se ejecuta con "ansible-playbook site.yaml"
 
+# Preparación de todas las máquinas (también el balanceador): esperar a que
+# arranquen, actualizar e instalar las herramientas de administración
 - name: Configuración común
   hosts: all
   become: true
@@ -10,13 +12,20 @@
 
 # La base de datos va antes que la web: la aplicación la necesita
 - name: Servidor de base de datos
-  hosts: server-db
+  hosts: servidores_bd
   become: true
   roles:
     - bd
 
-- name: Servidor web
-  hosts: server-web
+- name: Servidores web
+  hosts: servidores_web
   become: true
   roles:
     - web
+
+# El balanceador, al final: reparte entre servidores web ya configurados
+- name: Balanceador de carga
+  hosts: balanceadores
+  become: true
+  roles:
+    - balanceador
