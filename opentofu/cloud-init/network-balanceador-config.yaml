@@ -1,0 +1,8 @@
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true              # red NAT con DHCP
+    eth1:
+      dhcp4: false
+      addresses: ["10.0.50.1/24"]  # IP estática en la red muy aislada (por ella reparte el tráfico a los servidores web)
