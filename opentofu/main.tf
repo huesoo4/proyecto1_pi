@@ -119,13 +119,8 @@ resource "libvirt_domain" "server-db" {
   memory = var.memoria
   vcpu   = var.vcpus
 
-  # Red 1: NAT con DHCP (acceso exterior)
-  network_interface {
-    network_id     = libvirt_network.red_nat.id
-    wait_for_lease = true
-  }
-
-  # Red 2: aislada sin DHCP (IP estática 10.0.50.2/24)
+  # Red  aislada sin DHCP (IP estática 10.0.50.2/24). Al igual que las otras VMs
+  # sale a interner por el balanceador
   network_interface {
     network_id = libvirt_network.red_datos.id
   }
