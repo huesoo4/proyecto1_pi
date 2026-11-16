@@ -25,13 +25,7 @@ resource "libvirt_domain" "server-web1" {
   memory = var.memoria
   vcpu   = var.vcpus
 
-  # Red 1: NAT con DHCP (acceso exterior)
-  network_interface {
-    network_id     = libvirt_network.red_nat.id
-    wait_for_lease = true
-  }
-
-  # Red 2: aislada sin DHCP (IP estática 10.0.50.3/24)
+  # Red aislada sin DHCP (IP estática 10.0.50.3/24). Sale a internet por el balanceador
   network_interface {
     network_id = libvirt_network.red_datos.id
   }
@@ -77,13 +71,9 @@ resource "libvirt_domain" "server-web2" {
   memory = var.memoria
   vcpu   = var.vcpus
 
-  # Red 1: NAT con DHCP (acceso exterior)
-  network_interface {
-    network_id     = libvirt_network.red_nat.id
-    wait_for_lease = true
-  }
 
-  # Red 2: aislada sin DHCP (IP estática 10.0.50.4/24)
+  # Red aislada sin DHCP (IP estática 10.0.50.4/24). Al igual que server-web1 sale
+  # a internet por el balanceador
   network_interface {
     network_id = libvirt_network.red_datos.id
   }
