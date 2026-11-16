@@ -18,8 +18,7 @@ output "server-web2" {
 output "server-db" {
   value = {
     nombre = "server-db"
-    ip1    = try(libvirt_domain.server-db.network_interface[0].addresses[0], "No disponible")
-    ip2    = "10.0.50.2" # estática: está en cloud-init/network-db-config.yaml
+    ip    = "10.0.50.2" # estática: está en cloud-init/network-db-config.yaml
   }
 }
 
