@@ -2,8 +2,7 @@
 output "server-web1" {
   value = {
     nombre = "server-web1"
-    ip1    = try(libvirt_domain.server-web1.network_interface[0].addresses[0], "No disponible")
-    ip2    = "10.0.50.3" # estática: está en cloud-init/network-web1-config.yaml
+    ip    = "10.0.50.3" # estática: está en cloud-init/network-web1-config.yaml
   }
 }
 
@@ -11,8 +10,7 @@ output "server-web1" {
 output "server-web2" {
   value = {
     nombre = "server-web2"
-    ip1    = try(libvirt_domain.server-web2.network_interface[0].addresses[0], "No disponible")
-    ip2    = "10.0.50.4" # estática: está en cloud-init/network-web2-config.yaml
+    ip    = "10.0.50.4" # estática: está en cloud-init/network-web2-config.yaml
   }
 }
 
