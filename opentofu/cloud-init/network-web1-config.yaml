@@ -5,7 +5,7 @@ network:
       dhcp4: false
       addresses: ["10.0.50.3/24"]  # IP estática en la red muy aislada
       routes:
-        - to:
+        - to: default
           via: 10.0.50.1
       nameservers:
         addresses: [192.168.160.1]
