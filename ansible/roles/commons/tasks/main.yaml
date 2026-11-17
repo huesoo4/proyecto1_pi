@@ -2,6 +2,12 @@
   ansible.builtin.wait_for_connection:
     timeout: 300
 
+- name: Esperar a tener salida a internet
+  ansible.builtin.wait_for:
+    host: "{{ internet_prueba_host }}"
+    port: "{{ internet_prueba_puerto }}"
+    timeout: 300
+
 - name: Esperar a que cloud-init termine (si no, apt puede estar bloqueado)
   ansible.builtin.command: cloud-init status --wait
   changed_when: false
