@@ -1,11 +1,25 @@
 # Configuración del escenario, se ejecuta con "ansible-playbook site.yaml"
 
-# Preparación de todas las máquinas (también el balanceador): esperar a que
-# arranquen, actualizar e instalar las herramientas de administración
-- name: Configuración común
-  hosts: all
+- name: Configuración común del balanceador
+  hosts: balanceadores
   become: true
   # Los facts se recogen dentro del rol commons, cuando la máquina ya responde
+  gather_facts: false
+  roles:
+    - commons
+
+# El balanceador hace de router, da salida a internet a la red de datos. Tiene
+# que estar listo antes de preparar los servidores, que solo salen por él
+- name: Router
+  hosts: balanceadores
+  become: true
+  roles:
+    - router
+
+# Comunes en servidores, cuando ya tienen salida a internet por el balanceador
+- name: Configuración común de los servidores
+  hosts: servidores
+  become: true
   gather_facts: false
   roles:
     - commons
