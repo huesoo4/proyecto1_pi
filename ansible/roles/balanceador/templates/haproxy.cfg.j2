@@ -35,7 +35,7 @@ backend servidores_web
     # todas las peticiones de un navegador vayan al mismo servidor web
     cookie SERVIDOR insert indirect nocache
 {% for servidor in groups['servidores_web'] %}
-    server {{ servidor }} {{ hostvars[servidor]['ip_datos'] }}:80 check cookie {{ servidor }}
+    server {{ servidor }} {{ hostvars[servidor]['ansible_host'] }}:80 check cookie {{ servidor }}
 {% endfor %}
 
 # Estadísticas: http://<IP del balanceador>:{{ haproxy_stats_puerto }}
