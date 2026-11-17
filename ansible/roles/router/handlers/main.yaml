@@ -1,0 +1,4 @@
+# Aplica ya las reglas (iptables-persistent solo las carga al arrancar). Los
+# handlers se ejecutan al final del play "Router", antes de preparar los servidores
+- name: Cargar las reglas de iptables
+  ansible.builtin.command: iptables-restore /etc/iptables/rules.v4
