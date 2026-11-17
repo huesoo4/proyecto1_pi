@@ -9,6 +9,10 @@ ip_datos_bd: "{{ hostvars[groups['servidores_bd'][0]]['ip_datos'] }}"
 # Hay varios servidores web: lista con la IP de datos de cada uno
 ips_datos_web: "{{ groups['servidores_web'] | map('extract', hostvars, 'ip_datos') | list }}"
 
+# Para comprobar que una máquina ya tiene salida a internet (rol commons)
+internet_prueba_host: deb.debian.org
+internet_prueba_puerto: 80
+
 # Aplicación guestbook_php (fijada a un commit para que el despliegue no cambie)
 app_repo: https://github.com/josedom24/guestbook_php.git
 app_version: a5b6c516e2aab8449e1e838284b2eff97813251d
