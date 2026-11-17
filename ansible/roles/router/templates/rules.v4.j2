@@ -13,3 +13,8 @@ COMMIT
 :INPUT ACCEPT [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
+
+# Solo se reenvía lo que sale de la red de datos y sus respuestas, no acepta conexiones desde el exterior
+-A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A FORWARD -i {{ router_if_interna }} -o {{ router_if_externa }} -s {{ red_datos }} -j ACCEPT
+COMMIT
