@@ -1,0 +1,9 @@
+# El balanceador acturará como router
+- name: Activar el reenvío de paquetes
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_file: /etc/sysctl.d/90-router.conf
+    state: present
+    reload: true
+
