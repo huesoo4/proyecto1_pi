@@ -1,0 +1,11 @@
+# Reglas iptables gestionadas por Ansible
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+# Las VM salen a internet con la IP del balanceador en la red NAT
+-A POSTROUTING -s {{ red_datos }} -o {{ router_if_externa }} -j MASQUERADE
+COMMIT
+
