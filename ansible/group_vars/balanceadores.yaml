@@ -2,3 +2,7 @@
 haproxy_stats_puerto: 8404
 haproxy_stats_usuario: admin
 haproxy_stats_password: asdasd
+
+# Interfaces router, red nat y red de datos
+router_if_externa: eth0
+router_if_interna: eth1
