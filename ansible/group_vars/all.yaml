@@ -3,11 +3,12 @@ bd_nombre: guestbook
 bd_usuario: guestbook
 bd_password: guestb00k
 
-# IP de cada servidor en la red de datos. No se escriben aquí: salen de la
-# variable "ip_datos" que OpenTofu pone en el inventario
-ip_datos_bd: "{{ hostvars[groups['servidores_bd'][0]]['ip_datos'] }}"
+# IP de cada servidor en la red de datos. No se escriben aquí: los servidores
+# solo están en la red de datos, así que es el "ansible_host" que OpenTofu
+# pone en el inventario
+ip_datos_bd: "{{ hostvars[groups['servidores_bd'][0]]['ansible_host'] }}"
 # Hay varios servidores web: lista con la IP de datos de cada uno
-ips_datos_web: "{{ groups['servidores_web'] | map('extract', hostvars, 'ip_datos') | list }}"
+ips_datos_web: "{{ groups['servidores_web'] | map('extract', hostvars, 'ansible_host') | list }}"
 
 # Para comprobar que una máquina ya tiene salida a internet (rol commons)
 internet_prueba_host: deb.debian.org
