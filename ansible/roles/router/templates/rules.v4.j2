@@ -9,3 +9,7 @@
 -A POSTROUTING -s {{ red_datos }} -o {{ router_if_externa }} -j MASQUERADE
 COMMIT
 
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
