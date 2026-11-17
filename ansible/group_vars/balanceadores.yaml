@@ -6,3 +6,7 @@ haproxy_stats_password: asdasd
 # Interfaces router, red nat y red de datos
 router_if_externa: eth0
 router_if_interna: eth1
+
+# Red de datos (para las reglas NAT del router). Sale de "ip_datos", la IP del
+# balanceador en esa red que OpenTofu pone en el inventario: 10.0.50.1 -> 10.0.50.0/24
+red_datos: "{{ ip_datos | regex_replace('\\.[0-9]+$', '.0') }}/24"
