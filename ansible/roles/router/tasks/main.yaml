@@ -7,3 +7,10 @@
     state: present
     reload: true
 
+# iptables-persistent carga /etc/iptables/rules.v4 en cada arranque
+- name: Instalar iptables
+  ansible.builtin.apt:
+    name:
+      - iptables
+      - iptables-persistent
+    state: present
