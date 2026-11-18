@@ -4,10 +4,32 @@
     name: ufw
     state: absent
 
-# iptables-persistent carga /etc/iptables/rules.v4 y rules.v6 en cada arranque
+# iptables-persistent (netfilter-persistent) carga /etc/iptables/rules.v4 y
+# rules.v6 en cada arranque
 - name: Instalar iptables
   ansible.builtin.apt:
     name:
       - iptables
       - iptables-persistent
     state: present
+
+# validate: si las reglas tienen errores no se sustituyen las que funcionan
+- name: Configurar las reglas de IPv4
+  ansible.builtin.template:
+    src: rules.v4.j2
+    dest: /etc/iptables/rules.v4
+    owner: root
+    group: root
+    mode: "0640"
+    validate: iptables-restore --test %s
+  notify: Cargar las reglas de iptables
+
+- name: Configurar las reglas de IPv6
+  ansible.builtin.template:
+    src: rules.v6.j2
+    dest: /etc/iptables/rules.v6
+    owner: root
+    group: root
+    mode: "0640"
+    validate: ip6tables-restore --test %s
+  notify: Cargar las reglas de iptables
