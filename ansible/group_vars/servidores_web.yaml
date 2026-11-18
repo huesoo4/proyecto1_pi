@@ -1,3 +1,12 @@
 # Virtual host de la aplicación
 dominio: www.hueso.org
 document_root: /var/www/guestbook
+
+# Cortafuegos (rol cortafuegos), además de lo común a todos los servidores:
+# HTTP solo desde el balanceador y conexión a MariaDB en el servidor de datos
+cortafuegos_entrada:
+  - puerto: 80
+    origenes: ["{{ ip_datos_balanceador }}"]
+cortafuegos_salida:
+  - puerto: 3306
+    destinos: ["{{ ip_datos_bd }}"]
