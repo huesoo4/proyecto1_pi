@@ -1,3 +1,6 @@
+# {{ ansible_managed }}
+# Cortafuegos de los servidores: todo lo que no se permite expresamente se descarta
+
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -10,6 +13,7 @@
 -A INPUT -p icmp --icmp-type echo-request -s {{ red_datos }} -j ACCEPT
 # SSH desde la red de datos (Ansible entra saltando por el balanceador)
 -A INPUT -p tcp -s {{ red_datos }} --dport 22 -j ACCEPT
+# Servicios propios de cada grupo (cortafuegos_entrada en group_vars)
 {% for regla in cortafuegos_entrada %}
 -A INPUT -p tcp -s {{ regla.origenes | join(',') }} --dport {{ regla.puerto }} -j ACCEPT
 {% endfor %}
@@ -35,6 +39,7 @@
 -A OUTPUT -p udp --dport 123 -j ACCEPT
 # ping, para diagnosticar la red
 -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+# Conexiones propias de cada grupo (cortafuegos_salida en group_vars)
 {% for regla in cortafuegos_salida %}
 -A OUTPUT -p tcp -d {{ regla.destinos | join(',') }} --dport {{ regla.puerto }} -j ACCEPT
 {% endfor %}

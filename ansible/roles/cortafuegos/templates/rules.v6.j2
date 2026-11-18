@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+# Las máquinas no usan IPv6 (solo tienen dirección de enlace local): se descarta
+# todo salvo el tráfico local
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+COMMIT
