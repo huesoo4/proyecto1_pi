@@ -1,5 +1,8 @@
 # Configuración del escenario, se ejecuta con "ansible-playbook site.yaml"
 
+# Preparación del balanceador: esperar a que arranque, actualizar e instalar las
+# herramientas de administración. Va primero porque es la única máquina con
+# salida directa a internet (red NAT)
 - name: Configuración común del balanceador
   hosts: balanceadores
   become: true
@@ -23,7 +26,15 @@
   gather_facts: false
   roles:
     - commons
+
+# Cortafuegos de los servidores, antes de instalar sus servicios: solo queda
+# abierto lo que necesita cada uno
+- name: Cortafuegos de los servidores
+  hosts: servidores
+  become: true
+  roles:
     - cortafuegos
+
 # La base de datos va antes que la web: la aplicación la necesita
 - name: Servidor de base de datos
   hosts: servidores_bd
