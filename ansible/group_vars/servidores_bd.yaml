@@ -2,3 +2,10 @@
 schema_url: "https://raw.githubusercontent.com/josedom24/guestbook_php/{{ app_version }}/schema.sql"
 schema_dest: /var/lib/guestbook/schema.sql
 mariadb_socket: /run/mysqld/mysqld.sock
+
+# Cortafuegos (rol cortafuegos), además de lo común a todos los servidores:
+# MariaDB solo acepta conexiones de los servidores web
+cortafuegos_entrada:
+  - puerto: 3306
+    origenes: "{{ ips_datos_web }}"
+cortafuegos_salida: []
