@@ -1,0 +1,41 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+# Entrada
+-A INPUT -i lo -j ACCEPT
+# Respuestas a las conexiones que inicia la máquina
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -s {{ red_datos }} -j ACCEPT
+# SSH desde la red de datos (Ansible entra saltando por el balanceador)
+-A INPUT -p tcp -s {{ red_datos }} --dport 22 -j ACCEPT
+{% for regla in cortafuegos_entrada %}
+-A INPUT -p tcp -s {{ regla.origenes | join(',') }} --dport {{ regla.puerto }} -j ACCEPT
+{% endfor %}
+
+# Salida
+-A OUTPUT -o lo -j ACCEPT
+# Respuestas a las conexiones que se han aceptado en la entrada
+-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# Respuestas del servidor SSH, sin depender del seguimiento de conexiones: la
+# sesión de Ansible que carga estas reglas por primera vez empezó antes de que
+# existiera y, sin esta regla, se quedaría colgada
+-A OUTPUT -p tcp -d {{ red_datos }} --sport 22 -j ACCEPT
+# DNS, solo a los servidores configurados
+{% for dns in dns_servidores %}
+-A OUTPUT -p udp -d {{ dns }} --dport 53 -j ACCEPT
+-A OUTPUT -p tcp -d {{ dns }} --dport 53 -j ACCEPT
+{% endfor %}
+# HTTP y HTTPS: apt update/upgrade y descarga de la aplicación
+-A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+# SSH
+-A OUTPUT -p tcp --dport 22 -j ACCEPT
+# NTP: sincronización de la hora
+-A OUTPUT -p udp --dport 123 -j ACCEPT
+# ping, para diagnosticar la red
+-A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+{% for regla in cortafuegos_salida %}
+-A OUTPUT -p tcp -d {{ regla.destinos | join(',') }} --dport {{ regla.puerto }} -j ACCEPT
+{% endfor %}
+COMMIT
