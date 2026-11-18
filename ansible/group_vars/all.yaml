@@ -10,6 +10,18 @@ ip_datos_bd: "{{ hostvars[groups['servidores_bd'][0]]['ansible_host'] }}"
 # Hay varios servidores web: lista con la IP de datos de cada uno
 ips_datos_web: "{{ groups['servidores_web'] | map('extract', hostvars, 'ansible_host') | list }}"
 
+# IP del balanceador en la red de datos (variable "ip_datos" del inventario)
+ip_datos_balanceador: "{{ hostvars[groups['balanceadores'][0]]['ip_datos'] }}"
+
+# Red de datos (reglas de iptables de los roles router y cortafuegos). Sale de
+# la IP del balanceador en esa red: 10.0.50.1 -> 10.0.50.0/24
+red_datos: "{{ ip_datos_balanceador | regex_replace('\\.[0-9]+$', '.0') }}/24"
+
+# Servidores DNS de las máquinas (los mismos que en opentofu/cloud-init/network-*.yaml).
+# El cortafuegos solo deja salir consultas DNS hacia ellos
+dns_servidores:
+  - 192.168.160.1
+
 # Para comprobar que una máquina ya tiene salida a internet (rol commons)
 internet_prueba_host: deb.debian.org
 internet_prueba_puerto: 80
