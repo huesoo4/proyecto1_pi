@@ -138,6 +138,96 @@ resource "libvirt_domain" "server-db" {
   }
 }
 
+#################################
+# SERVIDOR NEXTCLOUD 1
+#################################
+
+# Clon ligero sobre la imagen base: solo almacena los cambios diferenciales
+resource "libvirt_volume" "server-nextcloud1-disk" {
+  name             = "server-nextcloud1.qcow2"
+  pool             = var.libvirt_pool_name
+  base_volume_name = var.base_image_debian
+  base_volume_pool = var.libvirt_pool_name
+  format           = "qcow2"
+}
+
+# ISO cloud-init con la configuración inicial de la máquina
+resource "libvirt_cloudinit_disk" "server-nextcloud1-cloudinit" {
+  name           = "server-nextcloud1-cloudinit.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-nextcloud1.yaml")
+  network_config = file("${path.module}/cloud-init/network-nextcloud1-config.yaml")
+}
+
+# Definición del dominio (máquina virtual)
+resource "libvirt_domain" "server-nextcloud1" {
+  name   = "server-nextcloud1"
+  memory = var.memoria_nextcloud
+  vcpu   = var.vcpus
+
+  # Red aislada sin DHCP (IP estática 10.0.50.5/24). Sale a internet por el balanceador
+  network_interface {
+    network_id = libvirt_network.red_datos.id
+  }
+
+  disk { volume_id = libvirt_volume.server-nextcloud1-disk.id }
+  cloudinit = libvirt_cloudinit_disk.server-nextcloud1-cloudinit.id
+
+  # Consola serie: las imágenes cloud la esperan y permite entrar con
+  # "virsh console" aunque falle la red
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+}
+
+
+#################################
+# SERVIDOR NEXTCLOUD 2
+#################################
+
+# Clon ligero sobre la imagen base: solo almacena los cambios diferenciales
+resource "libvirt_volume" "server-nextcloud2-disk" {
+  name             = "server-nextcloud2.qcow2"
+  pool             = var.libvirt_pool_name
+  base_volume_name = var.base_image_debian
+  base_volume_pool = var.libvirt_pool_name
+  format           = "qcow2"
+}
+
+# ISO cloud-init con la configuración inicial de la máquina
+resource "libvirt_cloudinit_disk" "server-nextcloud2-cloudinit" {
+  name           = "server-nextcloud2-cloudinit.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-nextcloud2.yaml")
+  network_config = file("${path.module}/cloud-init/network-nextcloud2-config.yaml")
+}
+
+# Definición del dominio (máquina virtual)
+resource "libvirt_domain" "server-nextcloud2" {
+  name   = "server-nextcloud2"
+  memory = var.memoria_nextcloud
+  vcpu   = var.vcpus
+
+  # Red aislada sin DHCP (IP estática 10.0.50.6/24). Sale a internet por el balanceador
+  network_interface {
+    network_id = libvirt_network.red_datos.id
+  }
+
+  disk { volume_id = libvirt_volume.server-nextcloud2-disk.id }
+  cloudinit = libvirt_cloudinit_disk.server-nextcloud2-cloudinit.id
+
+  # Consola serie: las imágenes cloud la esperan y permite entrar con
+  # "virsh console" aunque falle la red
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+}
+
+
 ################################
 # BALANCEADOR
 ###############################

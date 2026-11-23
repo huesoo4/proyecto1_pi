@@ -26,6 +26,13 @@ variable "memoria" {
   default = 1024
 }
 
+# Memoria para los servidores de Nextcloud: cada proceso de PHP puede usar hasta 512 MB
+variable "memoria_nextcloud" {
+  description = "Cantidad de memoria RAM en MB de los servidores de Nextcloud"
+  type = number
+  default = 2048
+}
+
 # vCPUs para servidores y límite de CPU del contenedor balanceador
 variable "vcpus" {
   description = "Número de vCPUs para cada servidor"
