@@ -10,6 +10,9 @@ server-db ansible_host=${ip_server_db} ansible_user=ubuntu
 server-nextcloud1 ansible_host=${ip_server_nextcloud1} ansible_user=debian
 server-nextcloud2 ansible_host=${ip_server_nextcloud2} ansible_user=debian
 
+[servidores_bd_nextcloud]
+server-db-nextcloud ansible_host=${ip_server_db_nextcloud} ansible_user=ubuntu
+
 [balanceadores]
 balanceador ansible_host=${ip_balanceador} ansible_user=debian ip_datos=10.0.50.1
 
@@ -17,6 +20,7 @@ balanceador ansible_host=${ip_balanceador} ansible_user=debian ip_datos=10.0.50.
 servidores_web
 servidores_bd
 servidores_nextcloud
+servidores_bd_nextcloud
 
 [servidores:vars]
 ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null debian@${ip_balanceador}"'

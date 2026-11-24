@@ -11,6 +11,7 @@ resource "local_file" "inventario" {
 
     ip_server_nextcloud1   = "10.0.50.5"
     ip_server_nextcloud2   = "10.0.50.6"
+    ip_server_db_nextcloud = "10.0.50.7"
 
     ip_balanceador = data.external.ip_balanceador.result.ip
   })
