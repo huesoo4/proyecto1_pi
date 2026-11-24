@@ -55,8 +55,8 @@ output "balanceador" {
   }
 }
 
-# Línea para /etc/hosts del anfitrión: el nombre de la aplicación apunta al
-# balanceador, no a un servidor web concreto
+# Línea para /etc/hosts del anfitrión: los nombres de las aplicaciones apuntan
+# al balanceador, no a un servidor concreto
 output "etc_hosts" {
-  value = "${data.external.ip_balanceador.result.ip} ${var.dominio}"
+  value = "${data.external.ip_balanceador.result.ip} ${var.dominio} ${var.dominio_nextcloud}"
 }

@@ -61,3 +61,11 @@ variable "dominio" {
   description = "Nombre DNS de la aplicación"
   default     = "www.hueso.org"
 }
+
+# Nombre de Nextcloud. Igual que "dominio", solo se usa en el output "etc_hosts" y
+# tiene que coincidir con "dominio_nextcloud" de ansible/group_vars/all.yaml
+variable "dominio_nextcloud" {
+  type        = string
+  description = "Nombre DNS de Nextcloud"
+  default     = "nextcloud.hueso.org"
+}
