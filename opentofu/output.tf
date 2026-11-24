@@ -22,6 +22,30 @@ output "server-db" {
   }
 }
 
+# server-nextcloud1
+output "server-nextcloud1" {
+  value = {
+    nombre = "server-nextcloud1"
+    ip    = "10.0.50.5" # estática: está en cloud-init/network-nextcloud1-config.yaml
+  }
+}
+
+# server-nextcloud2
+output "server-nextcloud2" {
+  value = {
+    nombre = "server-nextcloud2"
+    ip    = "10.0.50.6" # estática: está en cloud-init/network-nextcloud2-config.yaml
+  }
+}
+
+# server-db-nextcloud
+output "server-db-nextcloud" {
+  value = {
+    nombre = "server-db-nextcloud"
+    ip    = "10.0.50.7" # estática: está en cloud-init/network-db-nextcloud-config.yaml
+  }
+}
+
 # balanceador
 output "balanceador" {
   value = {
