@@ -8,6 +8,10 @@ resource "local_file" "inventario" {
     ip_server_web1 = "10.0.50.3"
     ip_server_web2 = "10.0.50.4"
     ip_server_db   = "10.0.50.2"
+
+    ip_server_nextcloud1   = "10.0.50.5"
+    ip_server_nextcloud2   = "10.0.50.6"
+
     ip_balanceador = data.external.ip_balanceador.result.ip
   })
 }
