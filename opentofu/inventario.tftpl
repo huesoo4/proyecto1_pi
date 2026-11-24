@@ -22,5 +22,11 @@ servidores_bd
 servidores_nextcloud
 servidores_bd_nextcloud
 
+# Las máquinas de Nextcloud comparten los datos de su base de datos y del
+# almacenamiento (group_vars/nextcloud.yaml)
+[nextcloud:children]
+servidores_nextcloud
+servidores_bd_nextcloud
+
 [servidores:vars]
 ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null debian@${ip_balanceador}"'
