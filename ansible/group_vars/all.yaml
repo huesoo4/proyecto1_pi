@@ -29,6 +29,9 @@ dns_servidores:
 internet_prueba_host: deb.debian.org
 internet_prueba_puerto: 80
 
+# Socket de MariaDB, por el que Ansible la administra (rol bd)
+mariadb_socket: /run/mysqld/mysqld.sock
+
 # Aplicación guestbook_php (fijada a un commit para que el despliegue no cambie)
 app_repo: https://github.com/josedom24/guestbook_php.git
 app_version: a5b6c516e2aab8449e1e838284b2eff97813251d
