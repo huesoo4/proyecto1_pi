@@ -1,0 +1,4 @@
+# Opciones de MariaDB que pide Nextcloud
+bd_opciones:
+  transaction_isolation: READ-COMMITTED
+  binlog_format: ROW
