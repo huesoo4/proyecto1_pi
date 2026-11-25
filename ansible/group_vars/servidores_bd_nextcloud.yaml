@@ -4,8 +4,10 @@ bd_opciones:
   binlog_format: ROW
 
 # Cortafuegos (rol cortafuegos), además de lo común a todos los servidores:
-# MariaDB solo acepta conexiones de los servidores de Nextcloud
+# MariaDB y NFS solo aceptan conexiones de los servidores de Nextcloud
 cortafuegos_entrada:
   - puerto: 3306
     origenes: "{{ bd_clientes }}"
+  - puerto: 2049
+    origenes: "{{ ips_datos_nextcloud }}"
 cortafuegos_salida: []
