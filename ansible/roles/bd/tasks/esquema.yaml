@@ -1,0 +1,31 @@
+- name: Crear el directorio para el script de la base de datos
+  ansible.builtin.file:
+    path: "{{ schema_dest | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Descargar el script que crea las tablas
+  ansible.builtin.get_url:
+    url: "{{ schema_url }}"
+    dest: "{{ schema_dest }}"
+    mode: "0644"
+
+# schema.sql no es idempotente (CREATE TABLE sin IF NOT EXISTS): solo se
+# importa si la tabla todavía no existe
+- name: Comprobar si las tablas ya están creadas
+  community.mysql.mysql_query:
+    login_db: "{{ bd_nombre }}"
+    query: "SHOW TABLES LIKE 'messages'"
+    login_unix_socket: "{{ mariadb_socket }}"
+  register: tablas
+  changed_when: false
+
+- name: Crear las tablas de la aplicación
+  community.mysql.mysql_db:
+    name: "{{ bd_nombre }}"
+    state: import
+    target: "{{ schema_dest }}"
+    login_unix_socket: "{{ mariadb_socket }}"
+  when: tablas.query_result[0] | length == 0
