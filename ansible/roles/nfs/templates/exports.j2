@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+{% for ip in ips_datos_nextcloud %}
+{{ nfs_directorio }} {{ ip }}(rw,sync,no_subtree_check)
+{% endfor %}

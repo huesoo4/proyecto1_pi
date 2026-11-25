@@ -12,6 +12,15 @@
     group: "33"
     mode: "0770"
 
+- name: Compartir el directorio solo con los servidores de Nextcloud
+  ansible.builtin.template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Recargar las exportaciones NFS
+
 - name: Asegurar que el servidor NFS está en marcha
   ansible.builtin.service:
     name: nfs-server
