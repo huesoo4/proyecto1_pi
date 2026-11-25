@@ -10,6 +10,9 @@ ip_datos_bd: "{{ hostvars[groups['servidores_bd'][0]]['ansible_host'] }}"
 # Hay varios servidores web: lista con la IP de datos de cada uno
 ips_datos_web: "{{ groups['servidores_web'] | map('extract', hostvars, 'ansible_host') | list }}"
 
+# Servidores que se conectan a la base de datos (rol bd y cortafuegos)
+bd_clientes: "{{ ips_datos_web }}"
+
 # IP del balanceador en la red de datos (variable "ip_datos" del inventario)
 ip_datos_balanceador: "{{ hostvars[groups['balanceadores'][0]]['ip_datos'] }}"
 

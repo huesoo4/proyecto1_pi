@@ -7,5 +7,5 @@ mariadb_socket: /run/mysqld/mysqld.sock
 # MariaDB solo acepta conexiones de los servidores web
 cortafuegos_entrada:
   - puerto: 3306
-    origenes: "{{ ips_datos_web }}"
+    origenes: "{{ bd_clientes }}"
 cortafuegos_salida: []
