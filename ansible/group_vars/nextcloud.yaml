@@ -1,0 +1,12 @@
+# Datos comunes a las máquinas de Nextcloud: sustituyen para este grupo a los de
+# all.yaml, así el rol bd sirve para los dos servidores de base de datos
+bd_nombre: nextcloud
+bd_usuario: nextcloud
+bd_password: nextcl0ud
+
+# IP en la red de datos, sacadas del inventario igual que en all.yaml
+ip_datos_bd: "{{ hostvars[groups['servidores_bd_nextcloud'][0]]['ansible_host'] }}"
+ips_datos_nextcloud: "{{ groups['servidores_nextcloud'] | map('extract', hostvars, 'ansible_host') | list }}"
+
+# Los dos servidores de Nextcloud comparten la base de datos
+bd_clientes: "{{ ips_datos_nextcloud }}"
