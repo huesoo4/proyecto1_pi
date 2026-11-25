@@ -8,5 +8,8 @@ bd_password: nextcl0ud
 ip_datos_bd: "{{ hostvars[groups['servidores_bd_nextcloud'][0]]['ansible_host'] }}"
 ips_datos_nextcloud: "{{ groups['servidores_nextcloud'] | map('extract', hostvars, 'ansible_host') | list }}"
 
-# Los dos servidores de Nextcloud comparten la base de datos
+# Los dos servidores de Nextcloud comparten la base de datos...
 bd_clientes: "{{ ips_datos_nextcloud }}"
+# ...y los ficheros de los usuarios: en la base de datos solo están sus
+# metadatos, así que los dos tienen que ver el mismo directorio (NFS)
+nfs_directorio: /srv/nextcloud

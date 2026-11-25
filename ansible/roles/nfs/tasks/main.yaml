@@ -1,0 +1,19 @@
+- name: Instalar el servidor NFS
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+
+# 33 es www-data en Debian y en Ubuntu: Apache escribe en él desde los clientes
+- name: Crear el directorio compartido
+  ansible.builtin.file:
+    path: "{{ nfs_directorio }}"
+    state: directory
+    owner: "33"
+    group: "33"
+    mode: "0770"
+
+- name: Asegurar que el servidor NFS está en marcha
+  ansible.builtin.service:
+    name: nfs-server
+    state: started
+    enabled: true
