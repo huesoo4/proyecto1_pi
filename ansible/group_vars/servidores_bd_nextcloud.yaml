@@ -2,3 +2,10 @@
 bd_opciones:
   transaction_isolation: READ-COMMITTED
   binlog_format: ROW
+
+# Cortafuegos (rol cortafuegos), además de lo común a todos los servidores:
+# MariaDB solo acepta conexiones de los servidores de Nextcloud
+cortafuegos_entrada:
+  - puerto: 3306
+    origenes: "{{ bd_clientes }}"
+cortafuegos_salida: []
