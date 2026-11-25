@@ -2,3 +2,6 @@
 # MariaDB solo acepta conexiones por la red de datos
 [mysqld]
 bind-address = {{ ip_datos_bd }}
+{% for opcion, valor in (bd_opciones | default({})).items() %}
+{{ opcion }} = {{ valor }}
+{% endfor %}
