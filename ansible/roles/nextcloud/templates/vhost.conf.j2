@@ -7,6 +7,10 @@
     # hace el balanceador
     Header always set X-Servidor "{{ inventory_hostname }}"
 
+    php_admin_value memory_limit {{ nextcloud_php_memoria }}
+    php_admin_value upload_max_filesize {{ nextcloud_php_subida }}
+    php_admin_value post_max_size {{ nextcloud_php_subida }}
+
     <Directory {{ nextcloud_raiz }}>
         Options -Indexes +FollowSymLinks
         # Nextcloud usa .htaccess para las reglas de reescritura

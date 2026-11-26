@@ -6,3 +6,7 @@ nextcloud_raiz: /var/www/nextcloud
 # Ficheros de los usuarios (directorio compartido por NFS, mismo punto de
 # montaje en los dos servidores)
 nextcloud_datos: /mnt/nextcloud
+
+# Límites de PHP
+nextcloud_php_memoria: 512M
+nextcloud_php_subida: 512M
