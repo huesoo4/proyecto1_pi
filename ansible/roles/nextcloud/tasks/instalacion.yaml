@@ -39,3 +39,12 @@
     mode: "0640"
   no_log: true
   when: inventory_hostname != groups['servidores_nextcloud'][0]
+
+# Nextcloud lee, además de config.php, los ficheros config/*.config.php
+- name: Configurar el acceso a través del balanceador
+  ansible.builtin.template:
+    src: balanceador.config.php.j2
+    dest: "{{ nextcloud_raiz }}/config/balanceador.config.php"
+    owner: www-data
+    group: www-data
+    mode: "0640"

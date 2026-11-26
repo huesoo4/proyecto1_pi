@@ -1,0 +1,14 @@
+<?php
+// {{ ansible_managed }}
+// Configuración común a los servidores de Nextcloud
+
+$CONFIG = [
+    // Nombre con el que se accede, que es el del balanceador
+    'trusted_domains' => ['{{ dominio_nextcloud }}'],
+    'overwrite.cli.url' => 'http://{{ dominio_nextcloud }}',
+    // La IP del cliente llega del balanceador en X-Forwarded-For
+    'trusted_proxies' => ['{{ ip_datos_balanceador }}'],
+    // Las aplicaciones instaladas desde la web solo quedarían en el servidor que
+    // atiende la petición, y los dos tienen que tener el mismo código
+    'appstoreenabled' => false,
+];
