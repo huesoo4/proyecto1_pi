@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+<VirtualHost *:80>
+    ServerName {{ dominio_nextcloud }}
+    DocumentRoot {{ nextcloud_raiz }}
+
+    # Indica qué servidor ha atendido la petición: permite ver el reparto que
+    # hace el balanceador
+    Header always set X-Servidor "{{ inventory_hostname }}"
+
+    <Directory {{ nextcloud_raiz }}>
+        Options -Indexes +FollowSymLinks
+        # Nextcloud usa .htaccess para las reglas de reescritura
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/{{ dominio_nextcloud }}_error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ dominio_nextcloud }}_access.log combined
+</VirtualHost>

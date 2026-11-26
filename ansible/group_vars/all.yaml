@@ -25,6 +25,9 @@ red_datos: "{{ ip_datos_balanceador | regex_replace('\\.[0-9]+$', '.0') }}/24"
 dns_servidores:
   - 192.168.160.1
 
+# Nombre DNS de Nextcloud (roles balanceador y nextcloud)
+dominio_nextcloud: nextcloud.hueso.org
+
 # Para comprobar que una máquina ya tiene salida a internet (rol commons)
 internet_prueba_host: deb.debian.org
 internet_prueba_puerto: 80
