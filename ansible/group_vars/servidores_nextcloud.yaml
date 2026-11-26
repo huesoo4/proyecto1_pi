@@ -10,3 +10,14 @@ nextcloud_datos: /mnt/nextcloud
 # Límites de PHP
 nextcloud_php_memoria: 512M
 nextcloud_php_subida: 512M
+
+# Cortafuegos (rol cortafuegos), además de lo común a todos los servidores:
+# HTTP solo desde el balanceador y conexión a MariaDB y NFS en el servidor de datos
+cortafuegos_entrada:
+  - puerto: 80
+    origenes: ["{{ ip_datos_balanceador }}"]
+cortafuegos_salida:
+  - puerto: 3306
+    destinos: ["{{ ip_datos_bd }}"]
+  - puerto: 2049
+    destinos: ["{{ ip_datos_bd }}"]
