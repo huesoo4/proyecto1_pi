@@ -48,7 +48,15 @@
   roles:
     - web
 
-# El balanceador, al final: reparte entre servidores web ya configurados
+# Nextcloud: primero su base de datos y los ficheros compartidos
+- name: Servidor de datos de Nextcloud
+  hosts: servidores_bd_nextcloud
+  become: true
+  roles:
+    - bd
+    - nfs
+
+# El balanceador, al final: reparte entre servidores ya configurados
 - name: Balanceador de carga
   hosts: balanceadores
   become: true
