@@ -31,3 +31,11 @@
     - dir
     - mime
   notify: Reiniciar apache2
+
+- name: Montar los ficheros compartidos
+  ansible.posix.mount:
+    src: "{{ ip_datos_bd }}:{{ nfs_directorio }}"
+    path: "{{ nextcloud_datos }}"
+    fstype: nfs4
+    opts: rw,_netdev
+    state: mounted
