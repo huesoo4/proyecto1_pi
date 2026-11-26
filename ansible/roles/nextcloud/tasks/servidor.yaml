@@ -39,3 +39,20 @@
     fstype: nfs4
     opts: rw,_netdev
     state: mounted
+
+- name: Descargar Nextcloud
+  ansible.builtin.get_url:
+    url: "{{ nextcloud_url }}"
+    dest: "/usr/local/src/nextcloud-{{ nextcloud_version }}.tar.bz2"
+    checksum: "sha256:{{ nextcloud_sha256 }}"
+    mode: "0644"
+
+# creates: si ya está extraído no se toca
+- name: Extraer Nextcloud
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/nextcloud-{{ nextcloud_version }}.tar.bz2"
+    dest: "{{ nextcloud_raiz | dirname }}"
+    remote_src: true
+    owner: www-data
+    group: www-data
+    creates: "{{ nextcloud_raiz }}/version.php"

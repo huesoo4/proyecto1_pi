@@ -1,3 +1,8 @@
+# Nextcloud (fijado a una versión, con su suma SHA-256, para que el despliegue no cambie)
+nextcloud_version: 35.0.3
+nextcloud_sha256: 58401440ce81b7f8d445a8c2a8027572b616ef83592f96b121fd15ec8a1aed35
+nextcloud_url: "https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_version }}.tar.bz2"
+nextcloud_raiz: /var/www/nextcloud
 # Ficheros de los usuarios (directorio compartido por NFS, mismo punto de
 # montaje en los dos servidores)
 nextcloud_datos: /mnt/nextcloud
