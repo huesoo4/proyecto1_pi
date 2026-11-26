@@ -19,3 +19,23 @@
   become_user: www-data
   no_log: true
   when: inventory_hostname == groups['servidores_nextcloud'][0]
+
+# Los dos servidores son la misma instancia: config.php lleva el identificador,
+# las claves y la conexión a la base de datos, y tiene que ser igual en todos
+- name: Leer config.php del primer servidor
+  ansible.builtin.slurp:
+    src: "{{ nextcloud_raiz }}/config/config.php"
+  register: nextcloud_config
+  run_once: true
+  delegate_to: "{{ groups['servidores_nextcloud'][0] }}"
+  no_log: true
+
+- name: Copiar config.php a los demás servidores
+  ansible.builtin.copy:
+    content: "{{ nextcloud_config.content | b64decode }}"
+    dest: "{{ nextcloud_raiz }}/config/config.php"
+    owner: www-data
+    group: www-data
+    mode: "0640"
+  no_log: true
+  when: inventory_hostname != groups['servidores_nextcloud'][0]
