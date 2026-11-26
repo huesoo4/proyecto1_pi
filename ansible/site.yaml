@@ -56,6 +56,12 @@
     - bd
     - nfs
 
+- name: Servidores de Nextcloud
+  hosts: servidores_nextcloud
+  become: true
+  roles:
+    - nextcloud
+
 # El balanceador, al final: reparte entre servidores ya configurados
 - name: Balanceador de carga
   hosts: balanceadores
