@@ -1,0 +1,33 @@
+# bzip2 para extraer Nextcloud, nfs-common para montar los ficheros y el cliente
+# de MariaDB para comprobar la conexión con la base de datos
+- name: Instalar Apache con PHP
+  ansible.builtin.apt:
+    name:
+      - apache2
+      - libapache2-mod-php
+      - php-mysql
+      - php-mbstring
+      - php-curl
+      - php-gd
+      - php-xml
+      - php-zip
+      - php-intl
+      - php-bcmath
+      - php-gmp
+      - php-imagick
+      - bzip2
+      - nfs-common
+      - mariadb-client
+    state: present
+
+- name: Activar los módulos de Apache que usa el .htaccess de Nextcloud
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - rewrite
+    - headers
+    - env
+    - dir
+    - mime
+  notify: Reiniciar apache2

@@ -1,0 +1,3 @@
+# Paquetes, aplicación y virtual host: igual en los dos servidores
+- name: Preparar el servidor
+  ansible.builtin.import_tasks: servidor.yaml
