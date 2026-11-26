@@ -1,3 +1,7 @@
 # Paquetes, aplicación y virtual host: igual en los dos servidores
 - name: Preparar el servidor
   ansible.builtin.import_tasks: servidor.yaml
+
+# Instalación y configuración compartida
+- name: Instalar Nextcloud
+  ansible.builtin.import_tasks: instalacion.yaml

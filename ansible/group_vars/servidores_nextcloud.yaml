@@ -7,6 +7,10 @@ nextcloud_raiz: /var/www/nextcloud
 # montaje en los dos servidores)
 nextcloud_datos: /mnt/nextcloud
 
+# Administrador que crea el instalador
+nextcloud_admin_usuario: admin
+nextcloud_admin_password: asdasd
+
 # Límites de PHP
 nextcloud_php_memoria: 512M
 nextcloud_php_subida: 512M

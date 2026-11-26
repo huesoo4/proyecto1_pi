@@ -1,0 +1,21 @@
+# Se instala una sola vez, en el primer servidor: crea las tablas y config.php.
+# no_log: la orden lleva las contraseñas
+- name: Ejecutar el instalador en el primer servidor
+  ansible.builtin.command:
+    argv:
+      - php
+      - occ
+      - maintenance:install
+      - --database=mysql
+      - "--database-host={{ ip_datos_bd }}"
+      - "--database-name={{ bd_nombre }}"
+      - "--database-user={{ bd_usuario }}"
+      - "--database-pass={{ bd_password }}"
+      - "--admin-user={{ nextcloud_admin_usuario }}"
+      - "--admin-pass={{ nextcloud_admin_password }}"
+      - "--data-dir={{ nextcloud_datos }}"
+    chdir: "{{ nextcloud_raiz }}"
+    creates: "{{ nextcloud_raiz }}/config/config.php"
+  become_user: www-data
+  no_log: true
+  when: inventory_hostname == groups['servidores_nextcloud'][0]
