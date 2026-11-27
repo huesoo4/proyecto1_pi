@@ -1,9 +1,9 @@
 # Proyecto 1: Infraestructura como código
 
-Escenario creado con **OpenTofu** (libvirt + Incus) y configurado con **Ansible** para poner en producción la aplicación [guestbook_php](https://github.com/josedom24/guestbook_php) (PHP + MariaDB).
+Escenario creado con **OpenTofu** (libvirt + Incus) y configurado con **Ansible** para poner en producción la aplicación [guestbook_php](https://github.com/josedom24/guestbook_php) (PHP + MariaDB) y [Nextcloud](https://nextcloud.com) (dos servidores que comparten base de datos y ficheros).
 
 - `opentofu/`: el escenario (redes, máquinas, cloud-init y el inventario de Ansible).
-- `ansible/`: la configuración (`site.yaml` con los roles `commons`, `router`, `cortafuegos`, `bd`, `web` y `balanceador`).
+- `ansible/`: la configuración (`site.yaml` con los roles `commons`, `router`, `cortafuegos`, `bd`, `web`, `nfs`, `nextcloud` y `balanceador`).
 
 ## Escenario
 
@@ -21,13 +21,20 @@ Escenario creado con **OpenTofu** (libvirt + Incus) y configurado con **Ansible*
                          eth1 10.0.50.1
                                 │
          red_datos  10.0.50.0/24  (muy aislada, IP estáticas)
-          │                     │                     │
+          ├─────────────────────┬─────────────────────┐
     ens3 10.0.50.3        ens3 10.0.50.4        ens3 10.0.50.2
   ┌─────────────┐      ┌─────────────┐      ┌──────────────┐
   │ server-web1 │      │ server-web2 │      │  server-db   │
   │  Debian 13  │      │  Debian 13  │      │ Ubuntu 26.04 │
   │ Apache+PHP  │      │ Apache+PHP  │      │   MariaDB    │
   └─────────────┘      └─────────────┘      └──────────────┘
+          ├─────────────────────┬─────────────────────┐
+    ens3 10.0.50.5        ens3 10.0.50.6        ens3 10.0.50.7
+ ┌───────────────────┐ ┌───────────────────┐ ┌─────────────────────┐
+ │ server-nextcloud1 │ │ server-nextcloud2 │ │ server-db-nextcloud │
+ │     Debian 13     │ │     Debian 13     │ │    Ubuntu 26.04     │
+ │ Apache+Nextcloud  │ │ Apache+Nextcloud  │ │   MariaDB + NFS     │
+ └───────────────────┘ └───────────────────┘ └─────────────────────┘
 ```
 
 | Máquina | Tipo | Sistema | Red NAT (`red_nat`) | Red de datos (`red_datos`) | Grupo de Ansible |
@@ -36,16 +43,24 @@ Escenario creado con **OpenTofu** (libvirt + Incus) y configurado con **Ansible*
 | `server-web1` | VM (libvirt) | Debian 13 | — | 10.0.50.3/24 | `servidores_web` |
 | `server-web2` | VM (libvirt) | Debian 13 | — | 10.0.50.4/24 | `servidores_web` |
 | `server-db` | VM (libvirt) | Ubuntu 26.04 | — | 10.0.50.2/24 | `servidores_bd` |
+| `server-nextcloud1` | VM (libvirt) | Debian 13 | — | 10.0.50.5/24 | `servidores_nextcloud` |
+| `server-nextcloud2` | VM (libvirt) | Debian 13 | — | 10.0.50.6/24 | `servidores_nextcloud` |
+| `server-db-nextcloud` | VM (libvirt) | Ubuntu 26.04 | — | 10.0.50.7/24 | `servidores_bd_nextcloud` |
 
 - Las VM son clones ligeros de las imágenes base `debian13-base1.qcow2` y `ubuntu2604-base.qcow2` del pool `default`. El balanceador es un contenedor Incus (`images:debian/13/cloud`) conectado a los dos bridges de libvirt.
 - Los servidores **solo** están en la red de datos, que es `mode = "none"`: el anfitrión no tiene IP en ella. Su puerta de enlace es el balanceador, que hace de **router** (NAT con iptables) y les da salida a internet. Usan como DNS el de libvirt (`192.168.160.1`), al que llegan a través del balanceador.
 - Ansible llega a los servidores saltando por SSH a través del balanceador (`ProxyCommand` en el inventario).
 - HAProxy recibe las peticiones por la red NAT y las reparte (`roundrobin`) entre los dos servidores web por la red de datos. Con una cookie (`SERVIDOR`) cada navegador se queda en el mismo servidor web, porque la aplicación guarda el token CSRF en la sesión de PHP, que es local de cada servidor.
 - Los dos servidores web comparten la misma base de datos. MariaDB solo escucha en la red de datos, y el usuario de la aplicación solo puede conectarse desde las IP de los servidores web.
+- **Nextcloud**: HAProxy separa las dos aplicaciones por el nombre que pide el navegador: `nextcloud.hueso.org` va a los servidores de Nextcloud y el resto a los servidores web. Los dos servidores son la misma instancia:
+  - Comparten la base de datos de `server-db-nextcloud`.
+  - Comparten los ficheros de los usuarios por NFS (`/srv/nextcloud` de `server-db-nextcloud`): en la base de datos solo están sus metadatos, así que sin esto un fichero subido a un servidor no existiría en el otro.
+  - Tienen el mismo `config.php`: se genera al instalar en el primero y se copia al segundo.
+  - Las aplicaciones no se instalan desde la web (`appstoreenabled`), para que los dos tengan el mismo código.
 - Cada servidor tiene un **cortafuegos** con iptables (política `DROP` en entrada y salida, IPv4 e IPv6). Solo se permite:
-  - Entrada: SSH y ping desde la red de datos; HTTP desde el balanceador (servidores web); MariaDB desde los servidores web (servidor de base de datos).
-  - Salida: DNS al servidor configurado, HTTP/HTTPS (apt y la aplicación), SSH, NTP, ping y MariaDB hacia el servidor de base de datos (servidores web).
-- Aplicación: `http://www.hueso.org` (apunta al balanceador). Estadísticas de HAProxy: `http://<IP_NAT_balanceador>:8404`.
+  - Entrada: SSH y ping desde la red de datos; HTTP desde el balanceador (servidores web y de Nextcloud); MariaDB desde sus clientes (servidores de base de datos); NFS desde los servidores de Nextcloud (`server-db-nextcloud`).
+  - Salida: DNS al servidor configurado, HTTP/HTTPS (apt y la aplicación), SSH, NTP, ping, MariaDB hacia su servidor de base de datos (servidores web y de Nextcloud) y NFS hacia `server-db-nextcloud` (servidores de Nextcloud).
+- Aplicaciones: `http://www.hueso.org` y `http://nextcloud.hueso.org` (apuntan al balanceador). Estadísticas de HAProxy: `http://<IP_NAT_balanceador>:8404`.
 
 ## Roles de Ansible
 
