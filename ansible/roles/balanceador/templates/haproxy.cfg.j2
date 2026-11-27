@@ -18,9 +18,12 @@ defaults
     timeout client  50s
     timeout server  50s
 
-# Entrada de la aplicación (red NAT)
-frontend guestbook
+# Entrada de las aplicaciones (red NAT). Comparten IP y puerto: el nombre que
+# pide el navegador decide a qué servidores va la petición
+frontend http
     bind *:80
+    acl es_nextcloud hdr(host),field(1,:) -i {{ dominio_nextcloud }}
+    use_backend servidores_nextcloud if es_nextcloud
     default_backend servidores_web
 
 # Servidores web, por la red de datos
