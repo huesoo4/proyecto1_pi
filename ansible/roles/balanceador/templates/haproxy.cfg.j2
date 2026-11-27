@@ -38,6 +38,20 @@ backend servidores_web
     server {{ servidor }} {{ hostvars[servidor]['ansible_host'] }}:80 check cookie {{ servidor }}
 {% endfor %}
 
+# Servidores de Nextcloud, por la red de datos
+backend servidores_nextcloud
+    balance roundrobin
+    option forwardfor
+    # Nextcloud solo responde a su nombre: la comprobación lleva la cabecera Host
+    option httpchk
+    http-check send meth GET uri /status.php ver HTTP/1.1 hdr Host {{ dominio_nextcloud }}
+    http-check expect status 200
+    # Persistencia: la sesión de PHP también es local de cada servidor
+    cookie SERVIDOR insert indirect nocache
+{% for servidor in groups['servidores_nextcloud'] %}
+    server {{ servidor }} {{ hostvars[servidor]['ansible_host'] }}:80 check cookie {{ servidor }}
+{% endfor %}
+
 # Estadísticas: http://<IP del balanceador>:{{ haproxy_stats_puerto }}
 listen estadisticas
     bind *:{{ haproxy_stats_puerto }}
