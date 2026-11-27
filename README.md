@@ -172,6 +172,19 @@ $SSH ubuntu@10.0.50.2 "mariadb -h 10.0.50.2 -u guestbook -p guestbook"
 $SSH ubuntu@10.0.50.2 "sudo iptables -L -n -v"
 ssh debian@$BAL "timeout 3 bash -c '</dev/tcp/10.0.50.2/3306' && echo abierto || echo cerrado"
 
+# Nextcloud: cada petición sin cookie va a un servidor distinto
+for i in 1 2 3 4; do curl -sI http://nextcloud.hueso.org/status.php | grep -i x-servidor; done
+
+# Los dos servidores son la misma instancia (mismo instanceid) y ven los mismos ficheros
+for ip in 5 6; do
+  $SSH debian@10.0.50.$ip "cd /var/www/nextcloud && sudo -u www-data php occ config:system:get instanceid; mount | grep nextcloud"
+done
+
+# Un fichero subido a través de un servidor se lee desde el otro
+U=http://nextcloud.hueso.org/remote.php/dav/files/admin
+echo prueba | curl -s -u admin:asdasd -b SERVIDOR=server-nextcloud1 -T - $U/prueba.txt
+curl -s -u admin:asdasd -b SERVIDOR=server-nextcloud2 $U/prueba.txt
+
 # Reproducibilidad
 tofu destroy && tofu apply && (cd ../ansible && ansible-playbook site.yaml)
 ```
