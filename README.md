@@ -70,9 +70,11 @@ Por orden de ejecución en `site.yaml`:
 2. `router` (`balanceadores`): activa el reenvío de paquetes y carga las reglas de NAT y reenvío con `iptables-persistent`. Tiene que estar listo antes de preparar los servidores, que solo salen a internet por el balanceador.
 3. `commons` (`servidores`): lo mismo que en el balanceador, ya con salida a internet.
 4. `cortafuegos` (`servidores`): quita `ufw` (Ubuntu) y carga las reglas de IPv4 e IPv6 con `iptables-persistent`. Lo que abre cada grupo está en `cortafuegos_entrada` y `cortafuegos_salida` de su `group_vars`.
-5. `bd` (`servidores_bd`): MariaDB, la base de datos y un usuario por cada servidor web.
+5. `bd` (`servidores_bd`): MariaDB, la base de datos y un usuario por cada servidor que se conecta (`bd_clientes`).
 6. `web` (`servidores_web`): Apache, PHP, la aplicación y su virtual host. Añade la cabecera `X-Servidor` con el nombre del servidor que atiende.
-7. `balanceador` (`balanceadores`): HAProxy con los servidores web como backend. La lista de servidores sale del grupo `servidores_web` del inventario.
+7. `bd` y `nfs` (`servidores_bd_nextcloud`): la base de datos de Nextcloud, con el mismo rol, y el directorio compartido. Los datos que cambian están en `group_vars/nextcloud.yaml`.
+8. `nextcloud` (`servidores_nextcloud`): Apache, PHP, el montaje NFS, Nextcloud y su virtual host. El instalador se ejecuta solo en el primer servidor.
+9. `balanceador` (`balanceadores`): HAProxy, con los servidores web y los de Nextcloud como backends. Las listas salen de los grupos `servidores_web` y `servidores_nextcloud` del inventario.
 
 ## Requisitos
 
@@ -102,7 +104,7 @@ Para acceder por nombre desde el equipo, añade a `/etc/hosts` la línea que mue
 
 ```bash
 tofu output -raw etc_hosts
-# 192.168.160.X www.hueso.org
+# 192.168.160.X www.hueso.org nextcloud.hueso.org
 ```
 
 Para destruirlo: `tofu destroy` (en `opentofu/`).
@@ -111,17 +113,20 @@ Para destruirlo: `tofu destroy` (en `opentofu/`).
 
 **OpenTofu** (`opentofu/variables.tf`):
 - Imágenes base: `base_image_debian` y `base_image_ubuntu`; imagen del contenedor: `incus-cloud`.
-- Recursos: `memoria` y `vcpus` (VM), `cmemoria` (contenedor).
-- `dominio`: solo para el output `etc_hosts`; debe coincidir con `dominio` de `ansible/group_vars/servidores_web.yaml`.
+- Recursos: `memoria`, `memoria_nextcloud` y `vcpus` (VM), `cmemoria` (contenedor).
+- `dominio` y `dominio_nextcloud`: solo para el output `etc_hosts`; deben coincidir con `dominio` de `ansible/group_vars/servidores_web.yaml` y `dominio_nextcloud` de `ansible/group_vars/all.yaml`.
 
 Las IP de la red de datos son estáticas: están en `opentofu/cloud-init/network-*-config.yaml`, y se repiten en `opentofu/inventario.tf` y `opentofu/output.tf`. Si se cambia alguna, hay que cambiarla en los tres sitios.
 
 **Inventario** (`ansible/hosts`, generado por OpenTofu): `ansible_host` de cada máquina (la IP NAT del balanceador y la IP de datos de los servidores), `ip_datos` del balanceador y el `ProxyCommand` para llegar a los servidores.
 
 **Ansible** (`ansible/group_vars/`):
-- `all.yaml`: datos de la base de datos, versión de la aplicación y datos de red. Las IP de datos no se repiten aquí: se leen del inventario (`ansible_host` de los servidores e `ip_datos` del balanceador), y a partir de la del balanceador se calcula `red_datos`. `dns_servidores` tiene que coincidir con el DNS de `opentofu/cloud-init/network-*-config.yaml`.
+- `all.yaml`: datos de la base de datos del guestbook, nombre de Nextcloud, versión de la aplicación y datos de red. Las IP de datos no se repiten aquí: se leen del inventario (`ansible_host` de los servidores e `ip_datos` del balanceador), y a partir de la del balanceador se calcula `red_datos`. `dns_servidores` tiene que coincidir con el DNS de `opentofu/cloud-init/network-*-config.yaml`.
 - `servidores_web.yaml`: nombre del virtual host, `DocumentRoot` y reglas del cortafuegos.
-- `servidores_bd.yaml`: ubicación de `schema.sql`, socket de MariaDB y reglas del cortafuegos.
+- `servidores_bd.yaml`: ubicación de `schema.sql` y reglas del cortafuegos.
+- `nextcloud.yaml`: base de datos y directorio compartido de Nextcloud. Para ese grupo sustituyen a los de `all.yaml`.
+- `servidores_nextcloud.yaml`: versión y suma SHA-256 de Nextcloud, rutas, administrador, límites de PHP y reglas del cortafuegos.
+- `servidores_bd_nextcloud.yaml`: opciones de MariaDB y reglas del cortafuegos.
 - `balanceadores.yaml`: puerto y credenciales de la página de estadísticas de HAProxy, e interfaces del router (externa e interna).
 
 ## Comprobaciones
